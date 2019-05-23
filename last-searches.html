@@ -1,0 +1,81 @@
+<link rel="import" href="./node_modules/@polymer/polymer/polymer-element.html">
+<link rel="import" href="searches-item.html">
+<link rel="import" href="node_modules/@polymer/polymer/lib/elements/dom-repeat.html">
+
+<dom-module id="last-searches">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      section {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        grid-gap: 2rem;
+        padding: 10px;
+        margin: 15px;
+      }
+    </style>
+
+    <h3>Last Searches</h3>
+    <section>
+      <template is="dom-repeat" items="[[data]]">
+        <searches-item item="[[item]]"></searches-item>
+      </template>
+    </section>
+
+  </template>
+  <script>
+    class LastSearches extends Polymer.Element {
+      static get is() {
+        return 'last-searches';
+      }
+      static get properties() {
+        return {
+          nameSearch: String,
+          image: {
+            type: String,
+            observer: "saveInLocalStorage"
+          },
+          data: Array
+        }
+      }
+      ready() {
+        super.ready();
+        this.data = new Array();
+        this.getFromLocalStorage();
+        if (this.data == null) {
+          let textoEl = this.shadowRoot.querySelector('h3');
+          textoEl.style.display = "none";
+        }
+      }
+      getFromLocalStorage() {
+        this.data = JSON.parse(localStorage.getItem("last searches"));
+      }
+      saveInLocalStorage(value, oldValue) {
+        let newSearch = {
+          nameSearch: this.nameSearch,
+          image: this.image
+        }
+        if (this.data == null) {
+          this.data = new Array();
+          this.data.push(newSearch);
+          localStorage.setItem("last searches", JSON.stringify(this.data));
+        }
+        else {
+          if (!this.data.find(this.findIfElementExistInLS.bind(this))) {
+            this.data.push(newSearch);
+            localStorage.setItem("last searches", JSON.stringify(this.data));
+          }
+        }
+      }
+      findIfElementExistInLS(element) {
+        return element.nameSearch == this.nameSearch;
+      }
+    }
+
+    window.customElements.define(LastSearches.is, LastSearches);
+  </script>
+
+</dom-module>

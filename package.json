@@ -1,0 +1,19 @@
+{
+  "name": "onboarding-movie-search",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "http-server -o"
+  },
+  "author": "Claudia",
+  "license": "ISC",
+  "dependencies": {
+    "@polymer/iron-ajax": "^3.0.1",
+    "@polymer/polymer": "^2.6.0"
+  },
+  "devDependencies": {
+    "http-server": "^0.11.1"
+  }
+}

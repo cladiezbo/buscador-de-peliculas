@@ -1,0 +1,102 @@
+<link rel="import" href="input-search.html">
+<link rel="import" href="movies-item.html">
+<link rel="import" href="last-searches.html">
+<link rel="import" href="node_modules/@polymer/polymer/lib/elements/dom-repeat.html">
+
+<dom-module id="movies-app">
+  <template>
+    <style>
+      :host {
+        display: block;
+        margin: 10px;
+      }
+
+      section {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        grid-gap: 2rem;
+        padding: 10px;
+        margin: 15px;
+      }
+
+      h2 {
+        font-size: x-large;
+        font-family: Verdana, Geneva, Tahoma, sans-serif;
+        text-align: center;
+      }
+    </style>
+    <h2>Search Movies</h2>
+    <input-search placeholder="Search movie" button-title="Search" value="spiderman" reg-exp="^[a-zA-ZñÑ0-9]+">
+    </input-search>
+    <last-searches name-search="[[valueSearch]]" image="[[img]]"></last-searches>
+
+    <section>
+      <template is="dom-repeat" items="[[list]]">
+        <movies-item item="[[item]]"></movies-item>
+      </template>
+    </section>
+  </template>
+  <script>
+
+    class MoviesApp extends Polymer.Element {
+
+      static get is() {
+        return 'movies-app';
+      }
+      static get properties() {
+        return {
+          list: Array,
+          url: String,
+          img: String,
+          valueSearch: String
+        }
+      }
+      ready() {
+        super.ready();
+        let inputSearchEl = this.shadowRoot.querySelector('input-search');
+        let lastSearchEl = this.shadowRoot.querySelector('last-searches');
+        this.listenerFromEventInput(inputSearchEl);
+        this.listenerFromEventInput(lastSearchEl);
+      }
+
+      listenerFromEventInput(elementEl) {
+        elementEl.addEventListener('button-clicked', (event) => {
+          this._changeUrlValueFromInput(event);
+          this.ajaxSearch()
+            .then((list) => {
+              this._processAjaxResponse(list);
+            });
+          this._noShowLastSearches();
+        })
+      }
+
+      ajaxSearch() {
+        return fetch(this.url)
+          .then((response) => response.json())
+          .then((response) => response.Search)
+      }
+      
+      _noShowLastSearches() {
+        let lastSearchesEl = this.shadowRoot.querySelector('last-searches');
+        lastSearchesEl.style.display = "none";
+      }
+      _processAjaxResponse(list) {
+        this.list = list;
+        this._replaceNoImage();
+        this.img = this.list[0].Poster;
+      }
+      _replaceNoImage() {
+        this.list.forEach(element => {
+          if (element.Poster == "N/A") {
+            element.Poster = `https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRhaSEPa8ihG0Xi7xfhcW_pvX4shIKAmA9jdIA0Y0vsZp7A-IGpMA`;
+          }
+        });
+      }
+      _changeUrlValue(event) {
+        this.url = `https://www.omdbapi.com/?s=${event.detail.value}&plot=full&apikey=e477ed6a`;
+        this.valueSearch = event.detail.value;
+      }
+    }
+    window.customElements.define(MoviesApp.is, MoviesApp);
+  </script>
+</dom-module>

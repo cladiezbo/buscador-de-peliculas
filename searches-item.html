@@ -1,0 +1,62 @@
+<link rel="import" href="./node_modules/@polymer/polymer/polymer-element.html">
+<dom-module id="searches-item">
+  <template>
+    <style>
+      :host {
+        display: block;
+      }
+
+      li {
+        display: flex;
+        flex-direction: column;
+        list-style: none;
+        border: solid 1px rgb(194, 189, 189);
+        border-radius: 10px;
+        background-color: rgb(241, 237, 237);
+        height: 450px;
+        width: 250px;
+      }
+
+      img {
+        border-radius: 10px;
+        height: 350px;
+        width: 250px;
+      }
+
+      button {
+        border: none;
+        margin: 5px;
+        padding: 10px;
+        lin
+      }
+    </style>
+    <li>
+      <img src="[[item.image]]">
+      <button on-click= "sendValue">[[item.nameSearch]]</button>
+    </li>
+  </template>
+  <script>
+    class SearchesItem extends Polymer.Element {
+      static get is() {
+        return 'searches-item';
+      }
+      static get properties() {
+        return {
+          item: Object
+        }
+      }
+      sendValue() {
+        let event = new CustomEvent('button-clicked', {
+          bubbles: true,
+          composed: true,
+          detail: {
+            value: this.item.nameSearch
+          }
+        });
+        this.dispatchEvent(event);
+      }
+    }
+    window.customElements.define(SearchesItem.is, SearchesItem);
+  </script>
+
+</dom-module>
